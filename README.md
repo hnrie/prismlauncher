@@ -7,89 +7,56 @@
 </p>
 
 <p align="center">
-  Prism Launcher is a custom launcher for Minecraft that allows you to easily manage multiple installations of Minecraft at once.<br />
-  <br />This is a <b>fork</b> of the MultiMC Launcher and is <b>not</b> endorsed by it.
+  A custom launcher for Minecraft that lets you easily manage multiple installations, mods and modpacks at once — <b>without ever needing a Microsoft account</b>.<br />
+  This is a personal <b>fork</b> of <a href="https://github.com/PrismLauncher/PrismLauncher">Prism Launcher</a> (itself a fork of the MultiMC Launcher) and is <b>not</b> endorsed by or affiliated with either project.
 </p>
 
-## Installation
+## Why this fork exists
 
-- All downloads and instructions for Prism Launcher can be found on our [Website](https://prismlauncher.org/download).
-- Last build status can be found in the [GitHub Actions](https://github.com/PrismLauncher/PrismLauncher/actions) tab (this also includes the pull requests status).
+This is a personal fork that tracks upstream Prism Launcher's `develop` branch and adds a few small changes that are not (yet) in upstream. Everything else is identical to upstream Prism Launcher.
 
-<p align="center">
-<a href="https://repology.org/project/prismlauncher/versions">
-    <img src="https://repology.org/badge/vertical-allrepos/prismlauncher.svg?columns=3" alt="Packaging status">
-</a>
-</p>
+### Offline accounts without a Microsoft account
 
-### Development Builds
+Upstream Prism Launcher requires at least one valid Microsoft account (that owns Minecraft) before it lets you add an offline account. This fork removes that requirement: you can add an offline account from a completely fresh install, with no Microsoft sign-in at any point.
 
-Please understand that these builds are not intended for most users. There may be bugs, and other instabilities. You have been warned.
+Keep in mind that offline accounts are just that — offline. They cannot join servers that enforce online-mode authentication, and their names are not verified by Mojang. If you play on such servers, you will still need a real Microsoft account.
 
-There are development builds available through:
+### Fresh builds for every commit and PR
 
-- [GitHub Actions](https://github.com/PrismLauncher/PrismLauncher/actions) (includes builds from pull requests opened by contributors)
-- [nightly.link](https://prismlauncher.org/nightly) (this will always point only to the latest version of develop)
+Every push and pull request is built on GitHub Actions and packaged into ready-to-run artifacts, which are uploaded to [GitHub Releases](https://github.com/hnrie/prismlauncher/releases):
 
-These have debug information in the binaries, so their file sizes are relatively larger.
+- Branch pushes produce releases tagged `build-<short-sha>` (e.g. `build-4a7184d`).
+- Pull requests produce releases tagged `build-pr-<number>-<short-sha>`.
 
-Prebuilt Development builds are provided for **Linux**, **Windows** and **macOS**.
+Each release contains builds for **Linux** (portable tarball and AppImage for x86_64 and aarch64), **macOS** (zip and dmg) and **Windows** (MSVC and MinGW-w64, as Setup installers and portable archives, including an arm64 variant).
 
-On Linux, we also offer our own [Flatpak nightly repository](https://github.com/PrismLauncher/flatpak). Most software centers are able to install it by opening [this link](https://flatpak.prismlauncher.org/prismlauncher-nightly.flatpakref).
+## Downloads
 
-## Community & Support
+All builds are available on the [Releases page](https://github.com/hnrie/prismlauncher/releases). Pick the release whose tag matches the commit or pull request you are interested in.
 
-Feel free to create a GitHub issue if you find a bug or want to suggest a new feature. We have multiple community spaces where other community members can help you:
+Please understand that these are **development builds**: they are built from the `develop` branch (or from pull requests), contain debug information, and may be buggy or unstable. They are not intended for most users. You have been warned.
 
-- **Our Discord server:**
+For stable, well-tested releases of the launcher itself, use the official builds from the upstream [Prism Launcher website](https://prismlauncher.org/download) — they just won't have the offline-account change from this fork.
 
-[![Prism Launcher Discord server](https://discordapp.com/api/guilds/1031648380885147709/widget.png?style=banner3)](https://prismlauncher.org/discord)
+The build status for this fork can be found in the [GitHub Actions](https://github.com/hnrie/prismlauncher/actions) tab.
 
-- **Our Matrix space:**
+## Getting help
 
-[![Prism Launcher Space](https://img.shields.io/matrix/prismlauncher:matrix.org?style=for-the-badge&label=Matrix%20Space&logo=matrix&color=purple)](https://prismlauncher.org/matrix)
-
-- **Our Subreddit:**
-
-[![r/PrismLauncher](https://img.shields.io/reddit/subreddit-subscribers/prismlauncher?style=for-the-badge&logo=reddit)](https://prismlauncher.org/reddit)
-
-## Translations
-
-The translation effort for Prism Launcher is hosted on [Weblate](https://hosted.weblate.org/projects/prismlauncher/launcher/) and information about translating Prism Launcher is available at <https://github.com/PrismLauncher/Translations>.
+- **Issues specific to this fork** (the offline-account change, the release builds): open an issue in this repository.
+- **Bugs or features in the launcher itself**: report them upstream at <https://github.com/PrismLauncher/PrismLauncher/issues>, since the fix belongs in Prism Launcher proper. There are also many community spaces run by upstream where you can ask for general help:
+  - [Discord](https://prismlauncher.org/discord)
+  - [Matrix](https://prismlauncher.org/matrix)
+  - [Subreddit](https://prismlauncher.org/reddit)
 
 ## Building
 
-If you want to build Prism Launcher yourself, check the [build instructions](https://prismlauncher.org/wiki/development/build-instructions).
+If you want to build this fork yourself, check the [upstream build instructions](https://prismlauncher.org/wiki/development/build-instructions). The requirements are the same as upstream: a C++23 compiler and Qt 6 (>= 6.4).
 
-## Sponsors & Partners
+If you are packaging this fork for a distribution, set `Launcher_BUILD_PLATFORM` to a slug identifying your distribution (examples: `archlinux`, `fedora`, `nixpkgs`).
 
-We thank all the wonderful backers over at Open Collective! Support Prism Launcher by [becoming a backer](https://opencollective.com/prismlauncher).
+## Translations
 
-[![OpenCollective Backers](https://opencollective.com/prismlauncher/backers.svg?width=890&limit=1000)](https://opencollective.com/prismlauncher#backers)
-
-Thanks to JetBrains for providing us a few licenses for all their products, as part of their [Open Source program](https://www.jetbrains.com/opensource/).
-
-<a href="https://jb.gg/OpenSource">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://www.jetbrains.com/company/brand/img/logo_jb_dos_4.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg">
-  <img alt="JetBrains logo" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg" width="40%">
-</picture>
-</a>
-
-Thanks to Weblate for hosting our translation efforts.
-
-<a href="https://hosted.weblate.org/engage/prismlauncher/">
-<img src="https://hosted.weblate.org/widgets/prismlauncher/-/open-graph.png" alt="Translation status" width="300" />
-</a>
-
-Thanks to Netlify for providing us their excellent web services, as part of their [Open Source program](https://www.netlify.com/open-source/).
-
-<a href="https://www.netlify.com"> <img src="https://www.netlify.com/v3/img/components/netlify-color-accent.svg" alt="Deploys by Netlify" /> </a>
-
-Thanks to the awesome people over at [MacStadium](https://www.macstadium.com/), for providing M1-Macs for development purposes!
-
-<a href="https://www.macstadium.com"><img src="https://uploads-ssl.webflow.com/5ac3c046c82724970fc60918/5c019d917bba312af7553b49_MacStadium-developerlogo.png" alt="Powered by MacStadium" width="300"></a>
+The translation effort is shared with upstream and is hosted on [Weblate](https://hosted.weblate.org/projects/prismlauncher/launcher/). Information about translating Prism Launcher is available at <https://github.com/PrismLauncher/Translations>.
 
 ## Forking/Redistributing/Custom builds policy
 
@@ -99,8 +66,6 @@ You are free to fork, redistribute and provide custom builds as long as you foll
 - Go through [CMakeLists.txt](CMakeLists.txt) and change Prism Launcher's API keys to your own or set them to empty strings (`""`) to disable them (this way the program will still compile but the functionality requiring those keys will be disabled).
 
 If you have any questions or want any clarification on the above conditions please make an issue and ask us.
-
-If you are just building Prism Launcher for your distribution, please make sure to set the `Launcher_BUILD_PLATFORM` to a slug representing your distribution. Examples are `archlinux`, `fedora` and `nixpkgs`.
 
 Note that if you build this software without removing the provided API keys in [CMakeLists.txt](CMakeLists.txt) you are accepting the following terms and conditions:
 
