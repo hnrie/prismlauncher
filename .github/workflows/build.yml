@@ -8,6 +8,8 @@ on:
   merge_group:
     types: [checks_requested]
   pull_request:
+  push:
+    branches: ["**"]
   workflow_call:
     inputs:
       build-type:
@@ -180,3 +182,103 @@ jobs:
           azure-client-id: ${{ secrets.AZURE_CLIENT_ID }}
           azure-tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           azure-subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+  upload_release:
+    name: Upload to GitHub Release
+    needs: build
+    if: ${{ github.ref_type != 'tag' && github.event_name != 'merge_group' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    permissions:
+      contents: write
+
+    runs-on: ubuntu-slim
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
+
+      - name: Determine tag and version
+        id: tag
+        shell: bash
+        run: |
+          VERSION="${GITHUB_SHA:0:7}"
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            TAG="build-pr-${{ github.event.pull_request.number }}-${VERSION}"
+            NAME="Prism Launcher build ${VERSION} (PR #${{ github.event.pull_request.number }})"
+          else
+            TAG="build-${VERSION}"
+            NAME="Prism Launcher build ${VERSION} (${{ github.ref_name }})"
+          fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Package artifacts properly
+        shell: bash
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          set -e
+
+          mv PrismLauncher-Linux-Qt6-Portable-*/PrismLauncher-portable.tar.gz PrismLauncher-Linux-Qt6-Portable-${VERSION}.tar.gz
+          mv PrismLauncher-Linux-aarch64-Qt6-Portable-*/PrismLauncher-portable.tar.gz PrismLauncher-Linux-aarch64-Qt6-Portable-${VERSION}.tar.gz
+          mv PrismLauncher-Linux-*-x86_64.AppImage/PrismLauncher-Linux-*-x86_64.AppImage PrismLauncher-Linux-x86_64.AppImage
+          mv PrismLauncher-Linux-*-x86_64.AppImage.zsync/PrismLauncher-Linux-*-x86_64.AppImage.zsync PrismLauncher-Linux-x86_64.AppImage.zsync
+          mv PrismLauncher-Linux-*-aarch64.AppImage/PrismLauncher-Linux-*-aarch64.AppImage PrismLauncher-Linux-aarch64.AppImage
+          mv PrismLauncher-Linux-*-aarch64.AppImage.zsync/PrismLauncher-Linux-*-aarch64.AppImage.zsync PrismLauncher-Linux-aarch64.AppImage.zsync
+          mv PrismLauncher-macOS-*/PrismLauncher.zip PrismLauncher-macOS-${VERSION}.zip
+          mv PrismLauncher-macOS-*/PrismLauncher.dmg PrismLauncher-macOS-${VERSION}.dmg
+
+          for d in PrismLauncher-Windows-MSVC*; do
+            cd "${d}" || continue
+            LEGACY="$(echo -n ${d} | grep -o Legacy || true)"
+            ARM64="$(echo -n ${d} | grep -o arm64 || true)"
+            INST="$(echo -n ${d} | grep -o Setup || true)"
+            PORT="$(echo -n ${d} | grep -o Portable || true)"
+            NAME="PrismLauncher-Windows-MSVC"
+            test -z "${LEGACY}" || NAME="${NAME}-Legacy"
+            test -z "${ARM64}" || NAME="${NAME}-arm64"
+            test -z "${PORT}" || NAME="${NAME}-Portable"
+            test -z "${INST}" || mv PrismLauncher-*.exe ../${NAME}-Setup-${VERSION}.exe
+            test -n "${INST}" || zip -r -9 "../${NAME}-${VERSION}.zip" *
+            cd ..
+          done
+
+          for d in PrismLauncher-Windows-MinGW-w64*; do
+            cd "${d}" || continue
+            INST="$(echo -n ${d} | grep -o Setup || true)"
+            PORT="$(echo -n ${d} | grep -o Portable || true)"
+            NAME="PrismLauncher-Windows-MinGW-w64"
+            test -z "${PORT}" || NAME="${NAME}-Portable"
+            test -z "${INST}" || mv PrismLauncher-*.exe ../${NAME}-Setup-${VERSION}.exe
+            test -n "${INST}" || zip -r -9 "../${NAME}-${VERSION}.zip" *
+            cd ..
+          done
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ steps.tag.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: ${{ steps.tag.outputs.name }}
+          prerelease: true
+          overwrite_files: true
+          fail_on_unmatched_files: true
+          files: |
+            PrismLauncher-Linux-x86_64.AppImage
+            PrismLauncher-Linux-x86_64.AppImage.zsync
+            PrismLauncher-Linux-aarch64.AppImage
+            PrismLauncher-Linux-aarch64.AppImage.zsync
+            PrismLauncher-Linux-Qt6-Portable-${{ steps.tag.outputs.version }}.tar.gz
+            PrismLauncher-Linux-aarch64-Qt6-Portable-${{ steps.tag.outputs.version }}.tar.gz
+            PrismLauncher-Windows-MinGW-w64-${{ steps.tag.outputs.version }}.zip
+            PrismLauncher-Windows-MinGW-w64-Portable-${{ steps.tag.outputs.version }}.zip
+            PrismLauncher-Windows-MinGW-w64-Setup-${{ steps.tag.outputs.version }}.exe
+            PrismLauncher-Windows-MSVC-arm64-${{ steps.tag.outputs.version }}.zip
+            PrismLauncher-Windows-MSVC-arm64-Portable-${{ steps.tag.outputs.version }}.zip
+            PrismLauncher-Windows-MSVC-arm64-Setup-${{ steps.tag.outputs.version }}.exe
+            PrismLauncher-Windows-MSVC-${{ steps.tag.outputs.version }}.zip
+            PrismLauncher-Windows-MSVC-Portable-${{ steps.tag.outputs.version }}.zip
+            PrismLauncher-Windows-MSVC-Setup-${{ steps.tag.outputs.version }}.exe
+            PrismLauncher-macOS-${{ steps.tag.outputs.version }}.zip
+            PrismLauncher-macOS-${{ steps.tag.outputs.version }}.dmg
