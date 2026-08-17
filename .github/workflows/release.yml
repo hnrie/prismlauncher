@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           submodules: "true"
-          path: "PrismLauncher-source"
+          path: "Vinilauncher-source"
       - name: Download artifacts
         uses: actions/download-artifact@v8
       - name: Grab and store version
@@ -43,40 +43,40 @@ jobs:
           echo "VERSION=$tag_name" >> $GITHUB_ENV
       - name: Package artifacts properly
         run: |
-          mv ${{ github.workspace }}/PrismLauncher-source PrismLauncher-${{ env.VERSION }}
-          mv PrismLauncher-Linux-Qt6-Portable*/PrismLauncher-portable.tar.gz PrismLauncher-Linux-Qt6-Portable-${{ env.VERSION }}.tar.gz
-          mv PrismLauncher-Linux-aarch64-Qt6-Portable*/PrismLauncher-portable.tar.gz PrismLauncher-Linux-aarch64-Qt6-Portable-${{ env.VERSION }}.tar.gz
-          mv PrismLauncher-*.AppImage/PrismLauncher-*-x86_64.AppImage PrismLauncher-Linux-x86_64.AppImage
-          mv PrismLauncher-*.AppImage.zsync/PrismLauncher-*-x86_64.AppImage.zsync PrismLauncher-Linux-x86_64.AppImage.zsync
-          mv PrismLauncher-*.AppImage/PrismLauncher-*-aarch64.AppImage PrismLauncher-Linux-aarch64.AppImage
-          mv PrismLauncher-*.AppImage.zsync/PrismLauncher-*-aarch64.AppImage.zsync PrismLauncher-Linux-aarch64.AppImage.zsync
-          mv PrismLauncher-macOS*/PrismLauncher.zip PrismLauncher-macOS-${{ env.VERSION }}.zip
-          mv PrismLauncher-macOS*/PrismLauncher.dmg PrismLauncher-macOS-${{ env.VERSION }}.dmg
+          mv ${{ github.workspace }}/Vinilauncher-source Vinilauncher-${{ env.VERSION }}
+          mv Vinilauncher-Linux-Qt6-Portable*/Vinilauncher-portable.tar.gz Vinilauncher-Linux-Qt6-Portable-${{ env.VERSION }}.tar.gz
+          mv Vinilauncher-Linux-aarch64-Qt6-Portable*/Vinilauncher-portable.tar.gz Vinilauncher-Linux-aarch64-Qt6-Portable-${{ env.VERSION }}.tar.gz
+          mv Vinilauncher-*.AppImage/Vinilauncher-*-x86_64.AppImage Vinilauncher-Linux-x86_64.AppImage
+          mv Vinilauncher-*.AppImage.zsync/Vinilauncher-*-x86_64.AppImage.zsync Vinilauncher-Linux-x86_64.AppImage.zsync
+          mv Vinilauncher-*.AppImage/Vinilauncher-*-aarch64.AppImage Vinilauncher-Linux-aarch64.AppImage
+          mv Vinilauncher-*.AppImage.zsync/Vinilauncher-*-aarch64.AppImage.zsync Vinilauncher-Linux-aarch64.AppImage.zsync
+          mv Vinilauncher-macOS*/Vinilauncher.zip Vinilauncher-macOS-${{ env.VERSION }}.zip
+          mv Vinilauncher-macOS*/Vinilauncher.dmg Vinilauncher-macOS-${{ env.VERSION }}.dmg
 
-          tar --exclude='.git' -czf PrismLauncher-${{ env.VERSION }}.tar.gz PrismLauncher-${{ env.VERSION }}
+          tar --exclude='.git' -czf Vinilauncher-${{ env.VERSION }}.tar.gz Vinilauncher-${{ env.VERSION }}
 
-          for d in PrismLauncher-Windows-MSVC*; do
+          for d in Vinilauncher-Windows-MSVC*; do
             cd "${d}" || continue
             LEGACY="$(echo -n ${d} | grep -o Legacy || true)"
             ARM64="$(echo -n ${d} | grep -o arm64 || true)"
             INST="$(echo -n ${d} | grep -o Setup || true)"
             PORT="$(echo -n ${d} | grep -o Portable || true)"
-            NAME="PrismLauncher-Windows-MSVC"
+            NAME="Vinilauncher-Windows-MSVC"
             test -z "${LEGACY}" || NAME="${NAME}-Legacy"
             test -z "${ARM64}" || NAME="${NAME}-arm64"
             test -z "${PORT}" || NAME="${NAME}-Portable"
-            test -z "${INST}" || mv PrismLauncher-*.exe ../${NAME}-Setup-${{ env.VERSION }}.exe
+            test -z "${INST}" || mv Vinilauncher-*.exe ../${NAME}-Setup-${{ env.VERSION }}.exe
             test -n "${INST}" || zip -r -9 "../${NAME}-${{ env.VERSION }}.zip" *
             cd ..
           done
 
-          for d in PrismLauncher-Windows-MinGW-w64*; do
+          for d in Vinilauncher-Windows-MinGW-w64*; do
             cd "${d}" || continue
             INST="$(echo -n ${d} | grep -o Setup || true)"
             PORT="$(echo -n ${d} | grep -o Portable || true)"
-            NAME="PrismLauncher-Windows-MinGW-w64"
+            NAME="Vinilauncher-Windows-MinGW-w64"
             test -z "${PORT}" || NAME="${NAME}-Portable"
-            test -z "${INST}" || mv PrismLauncher-*.exe ../${NAME}-Setup-${{ env.VERSION }}.exe
+            test -z "${INST}" || mv Vinilauncher-*.exe ../${NAME}-Setup-${{ env.VERSION }}.exe
             test -n "${INST}" || zip -r -9 "../${NAME}-${{ env.VERSION }}.zip" *
             cd ..
           done
@@ -87,26 +87,26 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ github.ref }}
-          name: Prism Launcher ${{ env.VERSION }}
+          name: Vinilauncher ${{ env.VERSION }}
           draft: true
           prerelease: false
           fail_on_unmatched_files: true
           files: |
-            PrismLauncher-Linux-x86_64.AppImage
-            PrismLauncher-Linux-x86_64.AppImage.zsync
-            PrismLauncher-Linux-aarch64.AppImage
-            PrismLauncher-Linux-aarch64.AppImage.zsync
-            PrismLauncher-Linux-Qt6-Portable-${{ env.VERSION }}.tar.gz
-            PrismLauncher-Linux-aarch64-Qt6-Portable-${{ env.VERSION }}.tar.gz
-            PrismLauncher-Windows-MinGW-w64-${{ env.VERSION }}.zip
-            PrismLauncher-Windows-MinGW-w64-Portable-${{ env.VERSION }}.zip
-            PrismLauncher-Windows-MinGW-w64-Setup-${{ env.VERSION }}.exe
-            PrismLauncher-Windows-MSVC-arm64-${{ env.VERSION }}.zip
-            PrismLauncher-Windows-MSVC-arm64-Portable-${{ env.VERSION }}.zip
-            PrismLauncher-Windows-MSVC-arm64-Setup-${{ env.VERSION }}.exe
-            PrismLauncher-Windows-MSVC-${{ env.VERSION }}.zip
-            PrismLauncher-Windows-MSVC-Portable-${{ env.VERSION }}.zip
-            PrismLauncher-Windows-MSVC-Setup-${{ env.VERSION }}.exe
-            PrismLauncher-macOS-${{ env.VERSION }}.zip
-            PrismLauncher-macOS-${{ env.VERSION }}.dmg
-            PrismLauncher-${{ env.VERSION }}.tar.gz
+            Vinilauncher-Linux-x86_64.AppImage
+            Vinilauncher-Linux-x86_64.AppImage.zsync
+            Vinilauncher-Linux-aarch64.AppImage
+            Vinilauncher-Linux-aarch64.AppImage.zsync
+            Vinilauncher-Linux-Qt6-Portable-${{ env.VERSION }}.tar.gz
+            Vinilauncher-Linux-aarch64-Qt6-Portable-${{ env.VERSION }}.tar.gz
+            Vinilauncher-Windows-MinGW-w64-${{ env.VERSION }}.zip
+            Vinilauncher-Windows-MinGW-w64-Portable-${{ env.VERSION }}.zip
+            Vinilauncher-Windows-MinGW-w64-Setup-${{ env.VERSION }}.exe
+            Vinilauncher-Windows-MSVC-arm64-${{ env.VERSION }}.zip
+            Vinilauncher-Windows-MSVC-arm64-Portable-${{ env.VERSION }}.zip
+            Vinilauncher-Windows-MSVC-arm64-Setup-${{ env.VERSION }}.exe
+            Vinilauncher-Windows-MSVC-${{ env.VERSION }}.zip
+            Vinilauncher-Windows-MSVC-Portable-${{ env.VERSION }}.zip
+            Vinilauncher-Windows-MSVC-Setup-${{ env.VERSION }}.exe
+            Vinilauncher-macOS-${{ env.VERSION }}.zip
+            Vinilauncher-macOS-${{ env.VERSION }}.dmg
+            Vinilauncher-${{ env.VERSION }}.tar.gz

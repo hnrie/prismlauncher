@@ -1,8 +1,8 @@
 <p align="center">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="/program_info/org.prismlauncher.PrismLauncher.logo-darkmode.svg">
-  <source media="(prefers-color-scheme: light)" srcset="/program_info/org.prismlauncher.PrismLauncher.logo.svg">
-  <img alt="Prism Launcher" src="/program_info/org.prismlauncher.PrismLauncher.logo.svg" width="40%">
+  <source media="(prefers-color-scheme: dark)" srcset="/program_info/org.vinilauncher.Vinilauncher.logo-darkmode.svg">
+  <source media="(prefers-color-scheme: light)" srcset="/program_info/org.vinilauncher.Vinilauncher.logo.svg">
+  <img alt="Vinilauncher" src="/program_info/org.vinilauncher.Vinilauncher.logo.svg" width="40%">
 </picture>
 </p>
 
@@ -13,7 +13,7 @@
 
 ## Why this fork exists
 
-This is a personal fork that tracks upstream Prism Launcher's `develop` branch and adds a few small changes that are not (yet) in upstream. Everything else is identical to upstream Prism Launcher.
+This is a personal fork (branded **Vinilauncher**) that tracks upstream Prism Launcher's `develop` branch and adds a few small changes that are not (yet) in upstream. Everything else is identical to upstream Prism Launcher.
 
 ### Offline accounts without a Microsoft account
 

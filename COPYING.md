@@ -1,6 +1,6 @@
-## Prism Launcher
+## Vinilauncher
 
-     Prism Launcher - Minecraft Launcher
+     Vinilauncher - Minecraft Launcher
      Copyright (C) 2022-2026 Prism Launcher Contributors
 
      This program is free software: you can redistribute it and/or modify
