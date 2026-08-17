@@ -45,7 +45,7 @@ let
 in
 
 stdenv.mkDerivation {
-  pname = "prismlauncher-unwrapped";
+  pname = "vinilauncher-unwrapped";
   version = "10.0-unstable-${date}";
 
   src = lib.fileset.toSource {
@@ -70,7 +70,7 @@ stdenv.mkDerivation {
 
   postPatch = ''
     substituteInPlace launcher/minecraft/ShortcutUtils.cpp \
-      --replace-fail 'QApplication::applicationFilePath()' 'QProcessEnvironment::systemEnvironment().value("NIX_LAUNCHER_WRAPPER", "${placeholder "out"}/bin/prismlauncher")'
+      --replace-fail 'QApplication::applicationFilePath()' 'QProcessEnvironment::systemEnvironment().value("NIX_LAUNCHER_WRAPPER", "${placeholder "out"}/bin/vinilauncher")'
   '';
 
   nativeBuildInputs = [
@@ -125,7 +125,7 @@ stdenv.mkDerivation {
       Scrumplex
       getchoo
     ];
-    mainProgram = "prismlauncher";
+    mainProgram = "vinilauncher";
     platforms = lib.platforms.linux ++ lib.platforms.darwin;
   };
 }

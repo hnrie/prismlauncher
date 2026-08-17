@@ -12,7 +12,7 @@
     nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.xz";
 
     libnbtplusplus = {
-      url = "github:PrismLauncher/libnbtplusplus";
+      url = "github:Vinilauncher/libnbtplusplus";
       flake = false;
     };
   };
@@ -92,7 +92,7 @@
           packages' = self.packages.${system};
 
           welcomeMessage = ''
-            Welcome to the Prism Launcher repository! 🌈
+            Welcome to the Vinilauncher repository! 🌈
 
             We just set some things up for you. To get building, you can run:
 
@@ -110,13 +110,13 @@
           '';
 
           # Re-use our package wrapper to wrap our development environment
-          qt-wrapper-env = packages'.prismlauncher.overrideAttrs (old: {
+          qt-wrapper-env = packages'.vinilauncher.overrideAttrs (old: {
             name = "qt-wrapper-env";
 
             # Required to use script-based makeWrapper below
             strictDeps = true;
 
-            # We don't need/want the unwrapped Prism package
+            # We don't need/want the unwrapped Vinilauncher package
             paths = [ ];
 
             nativeBuildInputs = old.nativeBuildInputs or [ ] ++ [
@@ -134,9 +134,9 @@
 
         {
           default = mkShell {
-            name = "prism-launcher";
+            name = "vinilauncher";
 
-            inputsFrom = [ packages'.prismlauncher-unwrapped ];
+            inputsFrom = [ packages'.vinilauncher-unwrapped ];
 
             packages = [
               pkgs.ccache
@@ -162,7 +162,7 @@
             ];
 
             cmakeBuildType = "Debug";
-            cmakeFlags = [ "-GNinja" ] ++ packages'.prismlauncher-unwrapped.cmakeFlags;
+            cmakeFlags = [ "-GNinja" ] ++ packages'.vinilauncher-unwrapped.cmakeFlags;
             dontFixCmake = true;
 
             shellHook = ''
@@ -193,7 +193,7 @@
         in
 
         {
-          prismlauncher-unwrapped = prev.callPackage ./nix/unwrapped.nix {
+          vinilauncher-unwrapped = prev.callPackage ./nix/unwrapped.nix {
             inherit (llvm) stdenv;
             inherit
               libnbtplusplus
@@ -201,7 +201,7 @@
               ;
           };
 
-          prismlauncher = final.callPackage ./nix/wrapper.nix { };
+          vinilauncher = final.callPackage ./nix/wrapper.nix { };
         };
 
       packages = forAllSystems (
@@ -211,12 +211,12 @@
           pkgs = nixpkgsFor.${system};
 
           # Build a scope from our overlay
-          prismPackages = lib.makeScope pkgs.newScope (final: self.overlays.default final pkgs);
+          vinilauncherPackages = lib.makeScope pkgs.newScope (final: self.overlays.default final pkgs);
 
           # Grab our packages from it and set the default
           packages = {
-            inherit (prismPackages) prismlauncher-unwrapped prismlauncher;
-            default = prismPackages.prismlauncher;
+            inherit (vinilauncherPackages) vinilauncher-unwrapped vinilauncher;
+            default = vinilauncherPackages.vinilauncher;
           };
         in
 
@@ -234,11 +234,11 @@
         in
 
         {
-          prismlauncher-debug = packages'.prismlauncher.override {
-            prismlauncher-unwrapped = legacyPackages'.prismlauncher-unwrapped-debug;
+          vinilauncher-debug = packages'.vinilauncher.override {
+            vinilauncher-unwrapped = legacyPackages'.vinilauncher-unwrapped-debug;
           };
 
-          prismlauncher-unwrapped-debug = packages'.prismlauncher-unwrapped.overrideAttrs {
+          vinilauncher-unwrapped-debug = packages'.vinilauncher-unwrapped.overrideAttrs {
             cmakeBuildType = "Debug";
             dontStrip = true;
           };
