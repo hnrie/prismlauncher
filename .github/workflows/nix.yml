@@ -113,7 +113,7 @@ jobs:
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         uses: cachix/cachix-action@v17
         with:
-          name: vinilauncher
+          name: prismlauncher
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - name: Run Flake checks
@@ -135,4 +135,4 @@ jobs:
         run: |
           nix build --no-link --print-out-paths .#vinilauncher \
             | tee -a "$GITHUB_STEP_SUMMARY" \
-            | xargs cachix pin vinilauncher "$TAG"-"$SYSTEM"
+            | xargs cachix pin prismlauncher "$TAG"-"$SYSTEM"
