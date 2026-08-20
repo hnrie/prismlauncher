@@ -44,11 +44,30 @@ jobs:
           echo "image-name=${REGISTRY}/${GITHUB_REPOSITORY_OWNER,,}/devcontainer" >> "$GITHUB_OUTPUT"
 
       - name: Install Podman
+        id: install-podman
         uses: redhat-actions/podman-install@main
         # TODO(@getchoo): Always use this when the action properly supports ARM
         if: ${{ runner.arch == 'X64' || runner.arch == 'X86' }}
+        # `azure.archive.ubuntu.com` is regularly unreachable from the runners, and
+        # the action has no retry of its own. The runner image already ships a
+        # usable Podman, so fall back to it instead of failing the whole build.
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
+
+      - name: Check Podman is usable
+        if: ${{ runner.arch == 'X64' || runner.arch == 'X86' }}
+        env:
+          INSTALL_PODMAN_OUTCOME: ${{ steps.install-podman.outcome }}
+        run: |
+          if ! podman version; then
+            echo "::error::Podman is unavailable and could not be installed."
+            exit 1
+          fi
+
+          if [ "$INSTALL_PODMAN_OUTCOME" = "failure" ]; then
+            echo "::warning::Falling back to the Podman preinstalled on the runner image."
+          fi
 
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -126,11 +145,30 @@ jobs:
           merge-multiple: true
 
       - name: Install Podman
+        id: install-podman
         # TODO(@getchoo): Always use this when the action properly supports ARM
         if: ${{ runner.arch == 'X64' || runner.arch == 'X86' }}
         uses: redhat-actions/podman-install@main
+        # `azure.archive.ubuntu.com` is regularly unreachable from the runners, and
+        # the action has no retry of its own. The runner image already ships a
+        # usable Podman, so fall back to it instead of failing the whole build.
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
+
+      - name: Check Podman is usable
+        if: ${{ runner.arch == 'X64' || runner.arch == 'X86' }}
+        env:
+          INSTALL_PODMAN_OUTCOME: ${{ steps.install-podman.outcome }}
+        run: |
+          if ! podman version; then
+            echo "::error::Podman is unavailable and could not be installed."
+            exit 1
+          fi
+
+          if [ "$INSTALL_PODMAN_OUTCOME" = "failure" ]; then
+            echo "::warning::Falling back to the Podman preinstalled on the runner image."
+          fi
 
       - name: Login to registry
         uses: redhat-actions/podman-login@v2
