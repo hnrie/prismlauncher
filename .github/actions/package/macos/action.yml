@@ -73,7 +73,6 @@ runs:
         fi
 
         sudo codesign --sign "$APPLE_CODESIGN_ID" --deep --force --entitlements "$ENTITLEMENTS_FILE" --options runtime "Vinilauncher.app/Contents/MacOS/vinilauncher"
-        mv "Vinilauncher.app" "Vinilauncher.app"
 
     - name: Notarize
       shell: bash
